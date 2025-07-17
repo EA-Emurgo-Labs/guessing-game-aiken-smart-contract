@@ -1,0 +1,6 @@
+build/*
+aiken.lock
+plutus.json
+scripts/node_modules/*
+scripts/package-lock.json
+scripts/note.txt
