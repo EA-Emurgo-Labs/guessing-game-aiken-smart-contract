@@ -20,7 +20,7 @@ dotenv.config();
   console.log("scriptAddress: ", scriptAddress);
 
   // Alice address
-  const mnemonic = "<ALICE_MNEMONIC";
+  const mnemonic = "<ALICE_MNEMONIC>";
 
   // Amount to lock
   const amount = 5_000_000n;
