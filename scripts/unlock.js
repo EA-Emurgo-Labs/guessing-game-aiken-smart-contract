@@ -7,15 +7,17 @@ import {
 } from "@lucid-evolution/lucid";
 import { validatorToAddress } from "@lucid-evolution/utils";
 import contract from "../plutus.json" assert { type: "json" };
+import * as dotenv from "dotenv";
+dotenv.config();
 
 (async function main() {
   try {
     const lucid = await Lucid(
       new Blockfrost(
-        "https://cardano-preprod.blockfrost.io/api/v0",
-        "<YOUR_API_KEY>"
+        process.env.BLOCKFROST_URL,
+        process.env.BLOCKFROST_API_KEY
       ),
-      "Preprod"
+      process.env.NETWORK
     );
 
     const spendValidator = {
@@ -23,7 +25,10 @@ import contract from "../plutus.json" assert { type: "json" };
       script: contract.validators[0].compiledCode,
     };
 
-    const scriptAddress = validatorToAddress("Preprod", spendValidator);
+    const scriptAddress = validatorToAddress(
+      process.env.NETWORK,
+      spendValidator
+    );
     console.log("scriptAddress: ", scriptAddress);
 
     // Mnemonic from Bob
@@ -38,7 +43,7 @@ import contract from "../plutus.json" assert { type: "json" };
 
     const allUTxOs = await lucid.utxosAt(scriptAddress);
     const ownerUTxO = allUTxOs.find(
-      (utxo) => utxo.txHash == "<TX_HASH_TO_UNLOCK>"
+      (utxo) => utxo.txHash == "<TX_HASH_TO_UNLOCK>" // Your tx hash from lock.js
     );
     console.log("ownerUTxO: ", ownerUTxO);
 

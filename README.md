@@ -1,65 +1,80 @@
-# guessing_game
+# guessing-game-aiken-smart-contract
 
-Write validators in the `validators` folder, and supporting functions in the `lib` folder using `.ak` as a file extension.
-
-```aiken
-validator my_first_validator {
-  spend(_datum: Option<Data>, _redeemer: Data, _output_reference: Data, _context: Data) {
-    True
-  }
-}
-```
-
-## Building
+## 1. Compile contract
 
 ```sh
-aiken build
+cd guessing-game-aiken-smart-contract
+aiken build -t verbose
 ```
 
-## Configuring
+## 2. Run scripts to test step-by-step
 
-**aiken.toml**
-```toml
-[config.default]
-network_id = 41
-```
-
-Or, alternatively, write conditional environment modules under `env`.
-
-## Testing
-
-You can write tests in any module using the `test` keyword. For example:
-
-```aiken
-use config
-
-test foo() {
-  config.network_id + 1 == 42
-}
-```
-
-To run all tests, simply do:
+### Install dependencies
 
 ```sh
-aiken check
+cd guessing-game-aiken-smart-contract/scripts
+npm install
 ```
 
-To run only tests matching the string `foo`, do:
+### Setup environment variables
+
+Create your own .env file and fill out all the variables
 
 ```sh
-aiken check -m foo
+cp .env.example .env
 ```
 
-## Documentation
+BLOCKFROST_API_KEY: Please go to website https://blockfrost.io/ and create your own API key
 
-If you're writing a library, you might want to generate an HTML documentation for it.
+BLOCKFROST_URL: Blockfrost URL (e.g: https://cardano-preprod.blockfrost.io/api/v0)
 
-Use:
+NETWORK: Cardano network (e.g: Preprod)
+
+### 2.1. Lock the fund
+
+Check file `lock.js`, change your input here:
+
+```js
+// Alice address
+const mnemonic = "<ALICE_MNEMONIC";
+
+// Amount to lock
+const amount = 5_000_000n;
+
+...
+
+const secretNumber = "42";
+```
+
+Run script:
 
 ```sh
-aiken docs
+node lock.js
 ```
 
-## Resources
+Please save the tx hash after running this script.
 
-Find more on the [Aiken's user manual](https://aiken-lang.org).
+### 2.2. Unlock the fund
+
+Check file `unlock.js`, change your input here:
+
+```js
+// Bob address
+const mnemonic = "<BOB_MNEMONIC>";
+
+...
+
+const guessingNumber = "42";
+
+const allUTxOs = await lucid.utxosAt(scriptAddress);
+const ownerUTxO = allUTxOs.find(
+  (utxo) => utxo.txHash == "<TX_HASH_TO_UNLOCK>" // Your tx hash from lock.js
+);
+console.log("ownerUTxO: ", ownerUTxO);
+```
+
+Run script:
+
+```sh
+node unlock.js
+```
